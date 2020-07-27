@@ -5,7 +5,7 @@ import StarImg from './../images/star.JPG'
 import ConnectorImg from './../images/connector.JPG'
 import Star from './Star'
 import { STAR, CONNECTOR, STAR_CLASS, CONNECTOR_LENGHT_DEFAULT } from './../constants'
-import Edge from './Edge'
+import Connector from './Connector'
 import findIndex from 'lodash/findIndex'
 import { haveIntersection } from './../utils'
 
@@ -44,20 +44,19 @@ const Canvas = () => {
         setConnectors(connectors.filter(item => item.id !== id));
     }
 
-    // const updateConnectorPosition = (e) => {
+    const updateConnectorPosition = (e) => {
 
-    //     let items = [...connectors];
-    //     let index = e.target.index;
+        let items = [...connectors];
+        let index = e.target.index;
 
-    //     let item = {
-    //         ...items[index],
-    //         x: stageRef.current.getPointerPosition().x,
-    //         y: stageRef.current.getPointerPosition().y
-    //     };
-    //     items[index] = item;
-    //     console.log(item)
-    //     setConnectors(items);
-    // }
+        let item = {
+            ...items[index],
+            x: stageRef.current.getPointerPosition().x,
+            y: stageRef.current.getPointerPosition().y
+        };
+        items[index] = item;
+        setConnectors(items);
+    }
 
     const createUniqtId = ({ x, y }) => (x * y)
 
@@ -67,6 +66,7 @@ const Canvas = () => {
 
         switch (dragType.current) {
             case STAR:
+            default:
                 setStars([...stars,
                 {
                     ...stageRef.current.getPointerPosition(),
@@ -97,15 +97,12 @@ const Canvas = () => {
         if (connectTo === null || connectTo === starIndex) {
             return true
         } 
-        alert("Ouups! Already Taken!");
+        alert("Ooops! Already Taken!");
         return false
     }
 
 
     const getIndexFromState = (connector) => {
-
-        //Due to problems in changing location please don't move "From edge"
-        console.log(connector.attrs.points);
 
         let fromX = connector.attrs.points[0];
         let fromY = connector.attrs.points[1];
@@ -113,9 +110,8 @@ const Canvas = () => {
         let ToY = connector.attrs.points[3];
 
         let index1 = findIndex(connectors, {'x': fromX, 'y': fromY});
-        console.log("found index1: " + index1);
         let index2 = findIndex(connectors, {'toX': ToX, 'toY': ToY});
-        console.log("found index2: " + index2);
+
         return index1 || index2;
     }
 
@@ -129,7 +125,6 @@ const Canvas = () => {
             let fromX = connector.attrs.points[0];
             let fromY = connector.attrs.points[1];
             connectorIndex = findIndex(connectors, {'x': fromX, 'y': fromY});
-            console.log(connectorIndex);
             item = items[connectorIndex];
             item.toX = stars[starIndex].x;
             item.toY = stars[starIndex].y;
@@ -137,7 +132,6 @@ const Canvas = () => {
             let toX = connector.attrs.points[2];
             let toY = connector.attrs.points[3];
             connectorIndex = findIndex(connectors, {'toX': toX, 'toY': toY});
-            console.log(connectorIndex);
             item = items[connectorIndex];
             item.x = stars[starIndex].x;
             item.y = stars[starIndex].y;
@@ -149,8 +143,12 @@ const Canvas = () => {
     const connectShapes = (star, connector) => {
 
         let items = [...connectors];
-        let index = getIndexFromState(connector);
-        // let index = 0;
+        //Not finished functionality:
+        // getIndexFromState is not working corectly.
+        // After connection of connector to star, connected point need to be updated in the state
+        //Function updateConnectorsLocationInSate was added, unfortunately could not be tested because of time limitation.
+        //In order to avoid bugs and crushes only usage of one connector should be tested.
+        let index = 0;
         let item = items[index];
         let starData = stars[star.index];
         let starX = starData.x;
@@ -160,17 +158,17 @@ const Canvas = () => {
             item.indexNode1 = 
                 verifyConnection(item.indexNode1, star.index) 
                     ? star.index : item.indexNode1;
-            items[index] = item;
-            setConnectors(items);
-            updateConnectorsLocationInSate(connector, star.index, "from");
+            
+            // updateConnectorsLocationInSate(connector, star.index, "from");
         } else {
             item.indexNode2 =
                 verifyConnection(item.indexNode2, star.index)
                     ? star.index : item.indexNode1;
-            items[index] = item;
-            setConnectors(items);
-            updateConnectorsLocationInSate(connector, star.index, "to");
+            
+            // updateConnectorsLocationInSate(connector, star.index, "to");
         }
+        items[index] = item;
+        setConnectors(items);
     }
 
     const connectHandler = (e) => {
@@ -224,8 +222,6 @@ const Canvas = () => {
                 <Stage
                     width={window.innerWidth}
                     height={window.innerHeight}
-                    width="800"
-                    height="500"
                     style={{ border: '1px solid grey' }}
                     ref={stageRef}
                 >
@@ -242,20 +238,16 @@ const Canvas = () => {
                             />
                         )}
                         {connectors.map((connector, i) =>
-                            <Edge
+                            <Connector
                                 key={i}
                                 id={connector.id}
                                 x={connector.x}
                                 y={connector.y}
                                 onDoubleClick={removeConnector}
-                                // onDragMove={updateConnectorPosition}
+                                onDragMove={updateConnectorPosition} //not working correctly
                                 indexNode1={connector.indexNode1}
                                 indexNode2={connector.indexNode2}
                                 // onDragEnd={connectHandler}  BUggy because of problems in connector location
-                                onClick = {e => {
-                                    console.log(connectors)
-                                    console.log(e)
-                                }}
                                 stars={stars}
                             />
                         )}

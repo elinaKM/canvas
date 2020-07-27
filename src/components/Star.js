@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import useDoubleClick from 'use-double-click'
-import { Star as KonvaStar } from 'react-konva';
+import { Star as KonvaStar } from 'react-konva'
 
 const Star = ({ onDoubleClick, onDragMove, id, ...rest }) => {
 
@@ -19,7 +19,7 @@ const Star = ({ onDoubleClick, onDragMove, id, ...rest }) => {
             numPoints={6}
             innerRadius={20}
             outerRadius={40}
-            fill="#89b717"
+            fill="#38ede7"
             draggable
             shadowColor="black"
             shadowBlur={2}

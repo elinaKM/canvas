@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import { Arrow } from 'react-konva'
 import useDoubleClick from 'use-double-click'
 import { CONNECTOR_LENGHT_DEFAULT } from './../constants'
 
-const Edge = ({ stars, indexNode1, indexNode2, id, x, y, onDoubleClick, onDragMove, onDragEnd }) => {
+const Connector = ({ stars, indexNode1, indexNode2, id, x, y, onDoubleClick, onDragMove, onDragEnd }) => {
 
     let node1=stars[indexNode1];
     let node2=stars[indexNode2];
@@ -44,16 +44,15 @@ const Edge = ({ stars, indexNode1, indexNode2, id, x, y, onDoubleClick, onDragMo
         <Arrow
             points={[arrowStart.x, arrowStart.y, arrowEnd.x, arrowEnd.y]}
             stroke="#000"
-            strokeWidth={8}
-            pointerWidth={0}
+            strokeWidth={5}
             // draggable //temporary, because of the problems with connector location
             onDoubleClick={onDoubleClick}
             onDragMove={onDragMove}
-            pointerWidth={4}
+            pointerWidth={5}
             onDragEnd={onDragEnd}
             ref={ref}
         />
     );
 };
 
-export default Edge
+export default Connector
